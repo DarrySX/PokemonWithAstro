@@ -8,7 +8,7 @@ Una aplicación web moderna y responsive para explorar el mundo Pokémon, constr
 ## 🌐 Sitio en Vivo
 
 <!-- TODO: Agregar el enlace del sitio desplegado aquí -->
-**URL del sitio:** [Próximamente - Agregar enlace de despliegue]
+**URL del sitio:** https://pokemon-with-astro.vercel.app/
 
 ## ✨ Características Principales
 
