@@ -1,0 +1,144 @@
+---
+import type { GetStaticPaths } from 'astro';
+// Código Server Side Only - Momento de construcción BUILD TIME
+import PokemonCard from '../../components/pokemons/PokemonCard.astro';
+import type { PokemonListResponse } from '../../interfaces/pokemon-list.response';
+
+import MainLayout from '../../layouts/MainLayout.astro';
+import Title from '@components/shared/Title.astro';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const resp = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
+  const { results } = (await resp.json()) as PokemonListResponse;
+
+  return paginate(results, { pageSize: 20 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+const title = `Pokémon Static | Página ${page.currentPage}`;
+---
+
+<MainLayout title={title}>
+  <div class="space-y-8">
+    <!-- Header -->
+    <div class="text-center">
+      <Title size="lg">Explorar Pokémon</Title>
+      <p class="text-gray-600 dark:text-gray-300">
+        Página {page.currentPage} de {Math.ceil(151 / 20)} - Descubre todos los Pokémon disponibles
+      </p>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
+      <div class="flex items-center space-x-4">
+        <div class="text-sm text-gray-600 dark:text-gray-400">
+          Mostrando {((page.currentPage - 1) * 20) + 1}-{Math.min(page.currentPage * 20, 151)} de 151 Pokémon
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <span class="text-sm text-gray-500 dark:text-gray-400">Ir a:</span>
+        <a href="/" class="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+          Inicio
+        </a>
+        <span class="text-gray-300 dark:text-gray-600">|</span>
+        <a href="/favorites" class="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+          Favoritos
+        </a>
+      </div>
+    </div>
+
+    <!-- Pokemon Grid -->
+    <section
+      aria-label="Listado de Pokémons"
+      class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+    >
+      {page.data.map(({ name, url }, index) => (
+        <div class="animate-slide-up" style={`animation-delay: ${index * 30}ms`}>
+          <PokemonCard name={name} url={url} />
+        </div>
+      ))}
+    </section>
+
+    <!-- Modern Pagination -->
+    <nav class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 dark:border-gray-700 dark:bg-gray-800 rounded-lg shadow-sm">
+      <div class="flex flex-1 justify-between sm:hidden">
+        <a
+          href={page.url.prev || '#'}
+          class={`
+            relative inline-flex items-center rounded-md px-4 py-2 text-sm font-medium transition-colors
+            ${!page.url.prev 
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500' 
+              : 'bg-white text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
+            }
+          `}
+          aria-disabled={!page.url.prev}
+        >
+          Anterior
+        </a>
+        <a
+          href={page.url.next || '#'}
+          class={`
+            relative ml-3 inline-flex items-center rounded-md px-4 py-2 text-sm font-medium transition-colors
+            ${!page.url.next 
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500' 
+              : 'bg-white text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
+            }
+          `}
+          aria-disabled={!page.url.next}
+        >
+          Siguiente
+        </a>
+      </div>
+      
+      <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div>
+          <p class="text-sm text-gray-700 dark:text-gray-300">
+            Mostrando página <span class="font-medium">{page.currentPage}</span> de{' '}
+            <span class="font-medium">{Math.ceil(151 / 20)}</span>
+          </p>
+        </div>
+        <div>
+          <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+            <a
+              href={page.url.prev || '#'}
+              class={`
+                relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:ring-gray-600 dark:text-gray-500
+                ${!page.url.prev 
+                  ? 'cursor-not-allowed bg-gray-50 dark:bg-gray-700' 
+                  : 'hover:bg-gray-50 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-300 bg-white dark:bg-gray-800'
+                }
+              `}
+              aria-disabled={!page.url.prev}
+            >
+              <span class="sr-only">Anterior</span>
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+              </svg>
+            </a>
+            
+            <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-primary-600 ring-1 ring-inset ring-primary-600 focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+              {page.currentPage}
+            </span>
+            
+            <a
+              href={page.url.next || '#'}
+              class={`
+                relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:ring-gray-600 dark:text-gray-500
+                ${!page.url.next 
+                  ? 'cursor-not-allowed bg-gray-50 dark:bg-gray-700' 
+                  : 'hover:bg-gray-50 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-300 bg-white dark:bg-gray-800'
+                }
+              `}
+              aria-disabled={!page.url.next}
+            >
+              <span class="sr-only">Siguiente</span>
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+              </svg>
+            </a>
+          </nav>
+        </div>
+      </div>
+    </nav>
+  </div>
+</MainLayout>

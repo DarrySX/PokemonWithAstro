@@ -1,0 +1,192 @@
+---
+import { Counter } from '@components/Counter';
+import Title from '@components/shared/Title.astro';
+import MainLayout from '@layouts/MainLayout.astro';
+
+const counterValue = 20;
+---
+
+<MainLayout title="Pokémon Static | Arquitectura de Islas">
+  <div class="space-y-8">
+    <!-- Header -->
+    <div class="text-center">
+      <Title size="lg">Arquitectura de Islas</Title>
+      <p class="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
+        Experimenta con la hidratación parcial de Astro donde solo los componentes interactivos se cargan en el cliente
+      </p>
+    </div>
+
+    <!-- Navigation breadcrumb -->
+    <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+      <a href="/" class="hover:text-primary-600 dark:hover:text-primary-400">Inicio</a>
+      <span>/</span>
+      <span class="text-gray-900 dark:text-white">Islas</span>
+    </div>
+
+    <!-- Introduction Card -->
+    <div class="rounded-lg bg-gradient-to-br from-blue-50 to-indigo-100 p-6 dark:from-blue-900/20 dark:to-indigo-900/20">
+      <div class="flex items-start space-x-4">
+        <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500 text-white">
+          <span class="text-xl">🏝️</span>
+        </div>
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            ¿Qué son las Islas?
+          </h2>
+          <p class="text-gray-700 dark:text-gray-300 mb-4">
+            Las "islas" son componentes interactivos que se hidratan selectivamente en el cliente, 
+            mientras que el resto de la página permanece como HTML estático. Esto mejora significativamente 
+            el rendimiento al cargar solo el JavaScript necesario.
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div class="flex items-center space-x-2">
+              <span class="text-green-500">✓</span>
+              <span>Carga más rápida</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-green-500">✓</span>
+              <span>Menos JavaScript</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-green-500">✓</span>
+              <span>SEO optimizado</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Video Demo -->
+    <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+        <span class="text-xl mr-2">🎬</span>
+        Persistencia de Video
+      </h3>
+      <p class="text-gray-600 dark:text-gray-400 mb-4">
+        Este video continúa reproduciéndose incluso cuando navegas entre páginas gracias a <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">transition:persist</code>
+      </p>
+      <video 
+        controls 
+        autoplay 
+        muted
+        transition:persist="playing-video" 
+        class="w-full rounded-lg shadow-sm"
+      >
+        <source
+          src="https://ia804502.us.archive.org/33/items/GoldenGa1939_3/GoldenGa1939_3_512kb.mp4"
+          type="video/mp4"
+        />
+        Tu navegador no soporta el elemento video.
+      </video>
+    </div>
+
+    <!-- Scroll Demo Area -->
+    <div class="rounded-lg bg-gradient-to-br from-amber-50 to-orange-100 p-6 dark:from-amber-900/20 dark:to-orange-900/20">
+      <h3 class="text-lg font-semibold text-amber-900 dark:text-amber-200 mb-2 flex items-center">
+        <span class="text-xl mr-2">📜</span>
+        Área de Demostración
+      </h3>
+      <div class="space-y-4">
+        <p class="text-amber-800 dark:text-amber-300">
+          Esta sección demuestra cómo el estado se mantiene durante las transiciones de página.
+          El video de arriba seguirá reproduciéndose incluso si navegas a otras páginas y regresas.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-white/50 dark:bg-gray-800/50 p-4 rounded-lg">
+            <h4 class="font-medium text-amber-900 dark:text-amber-200 mb-2">Beneficios del Estado Persistente:</h4>
+            <ul class="text-sm text-amber-800 dark:text-amber-300 space-y-1">
+              <li>• No se pierde el progreso del video</li>
+              <li>• Mejor experiencia de usuario</li>
+              <li>• Navegación más fluida</li>
+            </ul>
+          </div>
+          <div class="bg-white/50 dark:bg-gray-800/50 p-4 rounded-lg">
+            <h4 class="font-medium text-amber-900 dark:text-amber-200 mb-2">Tecnologías Utilizadas:</h4>
+            <ul class="text-sm text-amber-800 dark:text-amber-300 space-y-1">
+              <li>• Astro View Transitions</li>
+              <li>• HTML5 Video API</li>
+              <li>• CSS Transform Animations</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Counter Island -->
+    <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
+          <span class="text-xl mr-2">🏝️</span>
+          Contador Interactivo (Isla)
+        </h3>
+        <p class="text-gray-600 dark:text-gray-400">
+          Este contador es una "isla" que se hidrata solo cuando es necesario y mantiene su estado entre navegaciones.
+        </p>
+      </div>
+
+      <div class="rounded-lg bg-gray-50 p-6 dark:bg-gray-700">
+        <Counter
+          transition:persist="counter"
+          transition:persist-props
+          client:only="solid-js"
+          initValue={counterValue}
+        >
+          <Title size="sm">Estado Persistente</Title>
+        </Counter>
+        
+        <div class="mt-6 space-y-2">
+          <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+            <span class="flex h-2 w-2 rounded-full bg-green-500"></span>
+            <span>Hidratado con <code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">client:only="solid-js"</code></span>
+          </div>
+          <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+            <span class="flex h-2 w-2 rounded-full bg-blue-500"></span>
+            <span>Estado mantenido con <code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">transition:persist</code></span>
+          </div>
+          <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+            <span class="flex h-2 w-2 rounded-full bg-purple-500"></span>
+            <span>Sincronizado con localStorage para persistencia global</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation and Actions -->
+    <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+        <span class="text-xl mr-2">🧭</span>
+        Explora Más Funcionalidades
+      </h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <a 
+          href="/demo" 
+          class="flex items-center justify-center space-x-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+        >
+          <span>🧪</span>
+          <span>Demo</span>
+        </a>
+        <a 
+          href="/test-counter" 
+          class="flex items-center justify-center space-x-2 rounded-lg bg-green-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-green-700"
+        >
+          <span>🔢</span>
+          <span>Test Counter</span>
+        </a>
+        <a 
+          href="/favorites" 
+          class="flex items-center justify-center space-x-2 rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-red-700"
+        >
+          <span>❤️</span>
+          <span>Favoritos</span>
+        </a>
+        <a 
+          href="/" 
+          class="flex items-center justify-center space-x-2 rounded-lg bg-gray-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-700"
+        >
+          <span>🏠</span>
+          <span>Inicio</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</MainLayout>

@@ -1,0 +1,174 @@
+---
+// Código Server Side Only - Momento de construcción BUILD TIME
+import Title from '@components/shared/Title.astro';
+import PokemonCard from '../components/pokemons/PokemonCard.astro';
+import type { PokemonListResponse } from '../interfaces/pokemon-list.response';
+
+import MainLayout from '../layouts/MainLayout.astro';
+
+const resp = await fetch('https://pokeapi.co/api/v2/pokemon?limit=20');
+const data = (await resp.json()) as PokemonListResponse;
+
+const title = 'Pokémon Static | Inicio';
+---
+
+<MainLayout title={title}>
+  <div class="space-y-8">
+    <!-- Hero Section -->
+    <div class="text-center">
+      <Title size="xl">Explora el Mundo Pokémon</Title>
+      <p class="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
+        Descubre todos los Pokémon, guárdalos en favoritos y explora las características únicas de cada uno.
+      </p>
+    </div>
+    
+    <!-- Stats -->
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="flex h-8 w-8 items-center justify-center rounded-md bg-primary-500 text-white">
+              <span class="text-sm font-medium">⚡</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Pokémon</p>
+            <p class="text-2xl font-semibold text-gray-900 dark:text-white">151</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="flex h-8 w-8 items-center justify-center rounded-md bg-red-500 text-white">
+              <span class="text-sm">❤️</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Favoritos</p>
+            <p class="text-2xl font-semibold text-gray-900 dark:text-white" id="favorites-count">0</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="flex h-8 w-8 items-center justify-center rounded-md bg-green-500 text-white">
+              <span class="text-sm">🏝️</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Islas Activas</p>
+            <p class="text-2xl font-semibold text-gray-900 dark:text-white">3</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="flex h-8 w-8 items-center justify-center rounded-md bg-purple-500 text-white">
+              <span class="text-sm">🎨</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Temas</p>
+            <p class="text-2xl font-semibold text-gray-900 dark:text-white">2</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Pokémon Grid -->
+    <div>
+      <div class="mb-6 flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Pokémon Destacados</h2>
+        <a 
+          href="/pokemons/1" 
+          class="inline-flex items-center rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+        >
+          Ver todos
+          <svg class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+      
+      <div 
+        class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+      >
+        {data.results.map(({ name, url }, index) => (
+          <div class="animate-slide-up" style={`animation-delay: ${index * 50}ms`}>
+            <PokemonCard name={name} url={url} />
+          </div>
+        ))}
+      </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="rounded-lg bg-gradient-to-r from-primary-600 to-purple-600 p-8 text-white">
+      <div class="text-center">
+        <h2 class="text-3xl font-bold">¿Listo para comenzar?</h2>
+        <p class="mt-2 text-primary-100">Explora todas las funcionalidades de nuestra aplicación Pokémon</p>
+        
+        <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <a 
+            href="/favorites" 
+            class="rounded-lg bg-white/20 p-4 backdrop-blur-sm transition-all hover:bg-white/30 hover:scale-105"
+          >
+            <div class="text-2xl mb-2">❤️</div>
+            <div class="font-medium">Ver Favoritos</div>
+            <div class="text-sm text-primary-100">Gestiona tu colección</div>
+          </a>
+          
+          <a 
+            href="/islands" 
+            class="rounded-lg bg-white/20 p-4 backdrop-blur-sm transition-all hover:bg-white/30 hover:scale-105"
+          >
+            <div class="text-2xl mb-2">🏝️</div>
+            <div class="font-medium">Probar Islas</div>
+            <div class="text-sm text-primary-100">Hidratación parcial</div>
+          </a>
+          
+          <a 
+            href="/test-counter" 
+            class="rounded-lg bg-white/20 p-4 backdrop-blur-sm transition-all hover:bg-white/30 hover:scale-105"
+          >
+            <div class="text-2xl mb-2">🧪</div>
+            <div class="font-medium">Experimentar</div>
+            <div class="text-sm text-primary-100">Prueba funcionalidades</div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</MainLayout>
+
+<script>
+  // Actualizar contador de favoritos
+  const updateFavoritesCount = () => {
+    try {
+      const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+      const countElement = document.getElementById('favorites-count');
+      if (countElement) {
+        countElement.textContent = favorites.length.toString();
+      }
+    } catch (error) {
+      console.error('Error updating favorites count:', error);
+    }
+  };
+
+  // Actualizar al cargar
+  document.addEventListener('DOMContentLoaded', updateFavoritesCount);
+  document.addEventListener('astro:page-load', updateFavoritesCount);
+  
+  // Escuchar cambios en favoritos
+  window.addEventListener('favoritesChanged', updateFavoritesCount);
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'favorites') {
+      updateFavoritesCount();
+    }
+  });
+</script>

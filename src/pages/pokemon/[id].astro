@@ -1,0 +1,171 @@
+---
+import type { GetStaticPaths } from 'astro';
+import type { PokemonListResponse } from '../../interfaces/pokemon-list.response';
+import MainLayout from '../../layouts/MainLayout.astro';
+import PokemonCard from '@components/pokemons/PokemonCard.astro';
+import Title from '@components/shared/Title.astro';
+
+export const getStaticPaths = (async () => {
+  const resp = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
+  const { results } = (await resp.json()) as PokemonListResponse;
+
+  return results.map(({ name, url }) => {
+    const id = url.split('/').at(-2);
+
+    return {
+      params: { id: id },
+      props: { name: name, url: url },
+    };
+  });
+}) satisfies GetStaticPaths;
+
+const { id } = Astro.params;
+const { url, name } = Astro.props;
+
+const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
+const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
+---
+
+<MainLayout title={`Pokémon Static | ${capitalizedName}`}>
+  <div class="space-y-8">
+    <!-- Header with navigation -->
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <a 
+          href="/" 
+          class="inline-flex items-center space-x-2 rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+        >
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          <span>Regresar</span>
+        </a>
+        <div class="hidden sm:flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+          <a href="/" class="hover:text-primary-600 dark:hover:text-primary-400">Inicio</a>
+          <span>/</span>
+          <a href="/pokemons/1" class="hover:text-primary-600 dark:hover:text-primary-400">Pokémon</a>
+          <span>/</span>
+          <span class="text-gray-900 dark:text-white">{capitalizedName}</span>
+        </div>
+      </div>
+      
+      <div class="flex items-center space-x-2">
+        <span class="rounded-full bg-primary-100 px-3 py-1 text-sm font-medium text-primary-800 dark:bg-primary-900/30 dark:text-primary-300">
+          #{id}
+        </span>
+      </div>
+    </div>
+
+    <!-- Pokemon Details -->
+    <div class="text-center">
+      <Title size="xl">{capitalizedName}</Title>
+      <p class="text-gray-600 dark:text-gray-300">
+        Descubre las características de este increíble Pokémon
+      </p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Pokemon Card -->
+      <div class="flex justify-center lg:justify-end">
+        <div class="animate-fade-in">
+          <PokemonCard name={name} url={url} isBig />
+        </div>
+      </div>
+
+      <!-- Pokemon Info -->
+      <div class="space-y-6">
+        <!-- Audio Section -->
+        <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+            <span class="text-xl mr-2">🔊</span>
+            Grito del Pokémon
+          </h3>
+          <div class="space-y-3">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              Escucha el sonido característico de {capitalizedName}
+            </p>
+            <audio 
+              controls 
+              class="w-full h-10 rounded-lg"
+              preload="metadata"
+            >
+              <source src={audioSrc} type="audio/ogg" />
+              Tu navegador no soporta el elemento de audio.
+            </audio>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+            <span class="text-xl mr-2">📊</span>
+            Información Básica
+          </h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">ID Nacional</p>
+              <p class="text-lg font-semibold text-gray-900 dark:text-white">#{id}</p>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Nombre</p>
+              <p class="text-lg font-semibold text-gray-900 dark:text-white">{capitalizedName}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <a 
+            href="/favorites" 
+            class="inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+          >
+            <span class="mr-2">❤️</span>
+            Ver Favoritos
+          </a>
+          <a 
+            href="/pokemons/1" 
+            class="inline-flex items-center justify-center rounded-lg bg-primary-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+          >
+            <span class="mr-2">🔍</span>
+            Explorar Más
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Navigation -->
+    <div class="border-t border-gray-200 pt-6 dark:border-gray-700">
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="text-sm text-gray-600 dark:text-gray-400">
+          ¿Te gusta {capitalizedName}? Agrégalo a tus favoritos haciendo clic en el corazón
+        </div>
+        <div class="flex items-center space-x-3">
+          {parseInt(id) > 1 && (
+            <a 
+              href={`/pokemon/${parseInt(id) - 1}`} 
+              class="inline-flex items-center space-x-1 rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            >
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              <span>Anterior</span>
+            </a>
+          )}
+          
+          {parseInt(id) < 151 && (
+            <a 
+              href={`/pokemon/${parseInt(id) + 1}`} 
+              class="inline-flex items-center space-x-1 rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            >
+              <span>Siguiente</span>
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</MainLayout>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test LocalStorage</title>
+</head>
+<body>
+    <h1>Test LocalStorage</h1>
+    <button id="test-add">Agregar Test Pokemon</button>
+    <button id="test-get">Ver Favoritos</button>
+    <button id="test-clear">Limpiar</button>
+    <div id="output"></div>
+
+    <script>
+        const testPokemon = {
+            id: 1,
+            name: 'bulbasaur'
+        };
+
+        document.getElementById('test-add').addEventListener('click', () => {
+            let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+            favorites.push(testPokemon);
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            console.log('✅ Pokemon agregado:', testPokemon);
+            document.getElementById('output').innerHTML = 'Pokemon agregado: ' + JSON.stringify(testPokemon);
+        });
+
+        document.getElementById('test-get').addEventListener('click', () => {
+            const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+            console.log('📦 Favoritos actuales:', favorites);
+            document.getElementById('output').innerHTML = 'Favoritos: ' + JSON.stringify(favorites, null, 2);
+        });
+
+        document.getElementById('test-clear').addEventListener('click', () => {
+            localStorage.removeItem('favorites');
+            console.log('🗑️ Favoritos eliminados');
+            document.getElementById('output').innerHTML = 'Favoritos eliminados';
+        });
+
+        // Mostrar favoritos al cargar
+        window.onload = () => {
+            const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+            console.log('🔄 Favoritos al cargar:', favorites);
+            document.getElementById('output').innerHTML = 'Favoritos iniciales: ' + JSON.stringify(favorites, null, 2);
+        };
+    </script>
+</body>
+</html>

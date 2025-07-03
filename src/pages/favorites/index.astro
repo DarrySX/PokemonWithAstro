@@ -1,0 +1,79 @@
+---
+import { FavoritePokemons } from '@components/pokemons/FavoritePokemons';
+import Title from '@components/shared/Title.astro';
+import MainLayout from '@layouts/MainLayout.astro';
+---
+
+<MainLayout title="Pokémon Static | Favoritos">
+  <div class="space-y-8">
+    <!-- Header -->
+    <div class="text-center">
+      <Title size="lg">Mis Pokémon Favoritos</Title>
+      <p class="text-gray-600 dark:text-gray-300">
+        Gestiona tu colección personal de Pokémon favoritos
+      </p>
+    </div>
+
+    <!-- Stats and Actions -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
+      <div class="flex items-center space-x-4">
+        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+          <span class="text-lg">❤️</span>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-gray-900 dark:text-white">Total de Favoritos</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400" id="favorites-total">Cargando...</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <a 
+          href="/" 
+          class="inline-flex items-center rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+        >
+          🏠 Inicio
+        </a>
+        <a 
+          href="/pokemons/1" 
+          class="inline-flex items-center rounded-lg bg-primary-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+        >
+          ➕ Explorar Pokémon
+        </a>
+      </div>
+    </div>
+
+    <!-- Favorites Grid -->
+    <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+      <FavoritePokemons client:only="solid-js" />
+    </div>
+  </div>
+</MainLayout>
+
+<script>
+  // Actualizar contador de favoritos
+  const updateFavoritesTotal = () => {
+    try {
+      const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+      const totalElement = document.getElementById('favorites-total');
+      if (totalElement) {
+        const count = favorites.length;
+        totalElement.textContent = count === 0 
+          ? 'No tienes favoritos aún' 
+          : `${count} Pokémon ${count === 1 ? 'guardado' : 'guardados'}`;
+      }
+    } catch (error) {
+      console.error('Error updating favorites total:', error);
+    }
+  };
+
+  // Actualizar al cargar
+  document.addEventListener('DOMContentLoaded', updateFavoritesTotal);
+  document.addEventListener('astro:page-load', updateFavoritesTotal);
+  
+  // Escuchar cambios en favoritos
+  window.addEventListener('favoritesChanged', updateFavoritesTotal);
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'favorites') {
+      updateFavoritesTotal();
+    }
+  });
+</script>

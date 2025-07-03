@@ -1,0 +1,199 @@
+---
+import { Counter } from '@components/Counter';
+import Title from '@components/shared/Title.astro';
+import MainLayout from '@layouts/MainLayout.astro';
+
+const counterValue = 20;
+---
+
+<MainLayout title="Pokémon Static | Demo">
+  <div class="space-y-8">
+    <!-- Header -->
+    <div class="text-center">
+      <Title size="lg">Página de Demostración</Title>
+      <p class="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
+        Experimenta con la persistencia de estado y las transiciones fluidas de Astro
+      </p>
+    </div>
+
+    <!-- Navigation breadcrumb -->
+    <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+      <a href="/" class="hover:text-primary-600 dark:hover:text-primary-400">Inicio</a>
+      <span>/</span>
+      <span class="text-gray-900 dark:text-white">Demo</span>
+    </div>
+
+    <!-- Persistence Demo -->
+    <div class="rounded-lg bg-gradient-to-br from-green-50 to-emerald-100 p-6 dark:from-green-900/20 dark:to-emerald-900/20">
+      <div class="flex items-start space-x-4">
+        <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-green-500 text-white">
+          <span class="text-xl">💾</span>
+        </div>
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            Demo de Persistencia de Estado
+          </h2>
+          <p class="text-gray-700 dark:text-gray-300 mb-4">
+            Esta página demuestra cómo el estado del contador se mantiene entre navegaciones 
+            gracias a las poderosas características de Astro.
+          </p>
+          
+          <div class="rounded-lg bg-blue-50 p-4 border-l-4 border-blue-500 dark:bg-blue-900/20 dark:border-blue-400">
+            <div class="flex items-center space-x-2 mb-2">
+              <span class="text-blue-500">💡</span>
+              <h3 class="font-medium text-blue-900 dark:text-blue-200">Cómo probar la persistencia:</h3>
+            </div>
+            <ol class="text-sm text-blue-800 dark:text-blue-300 space-y-1 list-decimal list-inside">
+              <li>Cambia el valor del contador usando los botones</li>
+              <li>Navega a la página "Islas" o cualquier otra sección</li>
+              <li>Regresa a esta página y observa que el valor se mantiene</li>
+              <li>Incluso funciona al recargar la página completamente</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technologies Used -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+        <div class="flex items-center space-x-3 mb-4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500 text-white">
+            <span>🔄</span>
+          </div>
+          <h3 class="font-semibold text-gray-900 dark:text-white">View Transitions</h3>
+        </div>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Transiciones fluidas entre páginas sin perder el estado de los componentes activos.
+        </p>
+      </div>
+
+      <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+        <div class="flex items-center space-x-3 mb-4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-500 text-white">
+            <span>🗄️</span>
+          </div>
+          <h3 class="font-semibold text-gray-900 dark:text-white">LocalStorage</h3>
+        </div>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Persistencia a largo plazo del estado usando localStorage del navegador.
+        </p>
+      </div>
+
+      <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+        <div class="flex items-center space-x-3 mb-4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500 text-white">
+            <span>⚡</span>
+          </div>
+          <h3 class="font-semibold text-gray-900 dark:text-white">SolidJS Islands</h3>
+        </div>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Hidratación selectiva solo de los componentes que necesitan interactividad.
+        </p>
+      </div>
+    </div>
+
+    <!-- Counter Demo -->
+    <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
+          <span class="text-xl mr-2">🔢</span>
+          Contador con Estado Persistente
+        </h3>
+        <p class="text-gray-600 dark:text-gray-400">
+          Interactúa con este contador y navega entre páginas para ver cómo se mantiene el estado.
+        </p>
+      </div>
+
+      <div class="rounded-lg bg-gray-50 p-6 dark:bg-gray-700">
+        <Counter
+          transition:persist="counter"
+          transition:persist-props
+          client:only="solid-js"
+          initValue={counterValue}
+        >
+          <Title size="sm">Estado Global Sincronizado</Title>
+        </Counter>
+        
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <h4 class="font-medium text-gray-900 dark:text-white">Características técnicas:</h4>
+            <div class="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+              <div class="flex items-center space-x-2">
+                <span class="flex h-2 w-2 rounded-full bg-green-500"></span>
+                <span>Hidratación <code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">client:only</code></span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="flex h-2 w-2 rounded-full bg-blue-500"></span>
+                <span>Persistencia con <code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">transition:persist</code></span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="flex h-2 w-2 rounded-full bg-purple-500"></span>
+                <span>Sincronización cross-tab con localStorage</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="space-y-2">
+            <h4 class="font-medium text-gray-900 dark:text-white">Beneficios:</h4>
+            <div class="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+              <div class="flex items-center space-x-2">
+                <span class="text-green-500">✓</span>
+                <span>No se pierde información al navegar</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="text-green-500">✓</span>
+                <span>Funciona incluso al recargar</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="text-green-500">✓</span>
+                <span>Sincronizado entre pestañas</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Actions -->
+    <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+        <span class="text-xl mr-2">🧭</span>
+        Continúa Explorando
+      </h3>
+      <p class="text-gray-600 dark:text-gray-400 mb-6">
+        Navega a otras páginas para comprobar que el estado del contador se mantiene entre transiciones.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <a 
+          href="/islands" 
+          class="flex items-center justify-center space-x-2 rounded-lg bg-green-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-green-700"
+        >
+          <span>🏝️</span>
+          <span>Arquitectura de Islas</span>
+        </a>
+        <a 
+          href="/test-counter" 
+          class="flex items-center justify-center space-x-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+        >
+          <span>🧪</span>
+          <span>Test Counter</span>
+        </a>
+        <a 
+          href="/favorites" 
+          class="flex items-center justify-center space-x-2 rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-red-700"
+        >
+          <span>❤️</span>
+          <span>Favoritos</span>
+        </a>
+        <a 
+          href="/" 
+          class="flex items-center justify-center space-x-2 rounded-lg bg-gray-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-700"
+        >
+          <span>🏠</span>
+          <span>Inicio</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</MainLayout>

@@ -1,0 +1,153 @@
+---
+import NavBar from '@components/shared/NavBar.astro';
+import { siteInfo } from 'src/consts/site-info';
+
+interface Props {
+  title?: string;
+  image?: string;
+  description?: string;
+}
+
+const {
+  title = siteInfo.title,
+  description = siteInfo.description,
+  image,
+} = Astro.props;
+---
+
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- SEO -->
+    <meta name="description" content={description} />
+    <meta name="author" content={'Fernando Herrera'} />
+
+    <!-- OG Metatags -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#1e293b" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+
+    <!-- Required -->
+    <title>{title}</title>
+
+    <!-- Tema Script (debe ejecutarse antes que cualquier cosa) -->
+    <script is:inline>
+      // Inicialización inmediata del tema para evitar FOUC
+      (function() {
+        const THEME_KEY = 'theme-preference';
+        
+        const getTheme = () => {
+          if (typeof localStorage !== 'undefined') {
+            const stored = localStorage.getItem(THEME_KEY);
+            if (stored) return stored;
+          }
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+        
+        const applyTheme = (theme) => {
+          const html = document.documentElement;
+          
+          // Limpiar clases anteriores
+          html.classList.remove('dark', 'light');
+          
+          if (theme === 'dark') {
+            html.classList.add('dark');
+          }
+        };
+        
+        const theme = getTheme();
+        applyTheme(theme);
+        
+        // Guardar el tema inicial si no existe
+        if (typeof localStorage !== 'undefined' && !localStorage.getItem(THEME_KEY)) {
+          localStorage.setItem(THEME_KEY, theme);
+        }
+        
+        console.log('🎨 Tema inicial aplicado:', theme);
+      })();
+    </script>
+
+    <style>
+      @view-transition {
+        navigation: auto;
+      }
+      
+      /* Smooth transitions for theme changes */
+      :root {
+        color-scheme: light dark;
+      }
+      
+      * {
+        transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+      }
+      
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      
+      ::-webkit-scrollbar-track {
+        @apply bg-gray-100 dark:bg-gray-800;
+      }
+      
+      ::-webkit-scrollbar-thumb {
+        @apply bg-gray-400 dark:bg-gray-600 rounded-lg;
+      }
+      
+      ::-webkit-scrollbar-thumb:hover {
+        @apply bg-gray-500 dark:bg-gray-500;
+      }
+    </style>
+  </head>
+
+  <body class="min-h-screen bg-gray-50 text-gray-900 transition-colors dark:bg-gray-900 dark:text-gray-100">
+    <div class="flex min-h-screen flex-col">
+      <NavBar />
+      
+      <main class="flex-1 px-4 py-8 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl">
+          <slot />
+        </div>
+      </main>
+      
+      <!-- Footer -->
+      <footer class="border-t border-gray-200 bg-white py-8 dark:border-gray-700 dark:bg-gray-800">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="text-center text-sm text-gray-600 dark:text-gray-400">
+            <p>© 2025 Pokémon Static App. Creado por Brandon Valencia usando Astro.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Script para debug del tema -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('🎨 Estado inicial del tema:');
+        console.log('📋 Clases del documento:', document.documentElement.classList.toString());
+        console.log('💾 Theme en localStorage:', localStorage.getItem('theme-preference'));
+        console.log('🌙 Preferencia del sistema:', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        // Verificar que el tema se aplique correctamente
+        const currentTheme = localStorage.getItem('theme-preference') || 
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        if (currentTheme === 'dark' && !document.documentElement.classList.contains('dark')) {
+          console.warn('⚠️ Corrigiendo tema oscuro no aplicado');
+          document.documentElement.classList.add('dark');
+        } else if (currentTheme === 'light' && document.documentElement.classList.contains('dark')) {
+          console.warn('⚠️ Corrigiendo tema claro no aplicado');
+          document.documentElement.classList.remove('dark');
+        }
+      });
+    </script>
+  </body>
+</html>

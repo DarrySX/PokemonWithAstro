@@ -1,0 +1,271 @@
+---
+import { Counter } from '@components/Counter';
+import Title from '@components/shared/Title.astro';
+import MainLayout from '@layouts/MainLayout.astro';
+---
+
+<MainLayout title="Pokémon Static | Test Counter">
+  <div class="space-y-8">
+    <!-- Header -->
+    <div class="text-center">
+      <Title size="lg">Test de Persistencia del Counter</Title>
+      <p class="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
+        Prueba exhaustiva del sistema de persistencia de estado y sincronización
+      </p>
+    </div>
+
+    <!-- Navigation breadcrumb -->
+    <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+      <a href="/" class="hover:text-primary-600 dark:hover:text-primary-400">Inicio</a>
+      <span>/</span>
+      <span class="text-gray-900 dark:text-white">Test Counter</span>
+    </div>
+
+    <!-- Instructions -->
+    <div class="rounded-lg bg-gradient-to-br from-yellow-50 to-amber-100 p-6 dark:from-yellow-900/20 dark:to-amber-900/20">
+      <div class="flex items-start space-x-4">
+        <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-yellow-500 text-white">
+          <span class="text-xl">📋</span>
+        </div>
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+            Instrucciones de Prueba
+          </h2>
+          <ol class="space-y-2 text-gray-700 dark:text-gray-300">
+            <li class="flex items-start space-x-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center font-medium">1</span>
+              <span>Cambia el valor del counter usando los botones <kbd class="bg-gray-100 dark:bg-gray-700 px-1 rounded">+1</kbd> y <kbd class="bg-gray-100 dark:bg-gray-700 px-1 rounded">-1</kbd></span>
+            </li>
+            <li class="flex items-start space-x-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center font-medium">2</span>
+              <span>Navega a otra página usando los enlaces de navegación</span>
+            </li>
+            <li class="flex items-start space-x-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center font-medium">3</span>
+              <span>Regresa a esta página y verifica que el counter mantiene su valor</span>
+            </li>
+            <li class="flex items-start space-x-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center font-medium">4</span>
+              <span>Abre <kbd class="bg-gray-100 dark:bg-gray-700 px-1 rounded">DevTools → Console</kbd> para ver los logs de persistencia</span>
+            </li>
+            <li class="flex items-start space-x-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center font-medium">5</span>
+              <span>Prueba abrir múltiples pestañas para verificar la sincronización</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Counter Test -->
+    <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
+          <span class="text-xl mr-2">🧪</span>
+          Counter de Prueba
+        </h3>
+        <p class="text-gray-600 dark:text-gray-400">
+          Este contador está configurado con valor inicial 0 para facilitar las pruebas.
+        </p>
+      </div>
+
+      <div class="rounded-lg bg-gray-50 p-6 dark:bg-gray-700">
+        <Counter
+          transition:persist="counter"
+          transition:persist-props
+          client:only="solid-js"
+          initValue={0}
+        >
+          <Title size="sm">Estado de Prueba</Title>
+        </Counter>
+        
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h4 class="font-medium text-gray-900 dark:text-white mb-3">Pruebas Recomendadas:</h4>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
+                <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                <span>Incrementar/decrementar varias veces</span>
+              </div>
+              <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
+                <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                <span>Navegar entre páginas múltiples veces</span>
+              </div>
+              <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
+                <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
+                <span>Abrir en nueva pestaña</span>
+              </div>
+              <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
+                <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+                <span>Recargar la página</span>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-gray-900 dark:text-white mb-3">Esperado:</h4>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center space-x-2 text-green-600 dark:text-green-400">
+                <span>✓</span>
+                <span>El valor se mantiene entre navegaciones</span>
+              </div>
+              <div class="flex items-center space-x-2 text-green-600 dark:text-green-400">
+                <span>✓</span>
+                <span>Sincronización automática entre pestañas</span>
+              </div>
+              <div class="flex items-center space-x-2 text-green-600 dark:text-green-400">
+                <span>✓</span>
+                <span>Persistencia tras recargar</span>
+              </div>
+              <div class="flex items-center space-x-2 text-green-600 dark:text-green-400">
+                <span>✓</span>
+                <span>Logs detallados en consola</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+        <span class="text-xl mr-2">🧭</span>
+        Enlaces de Navegación para Pruebas
+      </h3>
+      <p class="text-gray-600 dark:text-gray-400 mb-6">
+        Usa estos enlaces para probar la persistencia navegando entre diferentes páginas.
+      </p>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a 
+          href="/demo" 
+          class="flex items-center justify-center space-x-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+        >
+          <span>🧪</span>
+          <span>Demo</span>
+        </a>
+        <a 
+          href="/islands" 
+          class="flex items-center justify-center space-x-2 rounded-lg bg-green-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-green-700"
+        >
+          <span>🏝️</span>
+          <span>Islands</span>
+        </a>
+        <a 
+          href="/favorites" 
+          class="flex items-center justify-center space-x-2 rounded-lg bg-purple-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-purple-700"
+        >
+          <span>❤️</span>
+          <span>Favoritos</span>
+        </a>
+        <a 
+          href="/" 
+          class="flex items-center justify-center space-x-2 rounded-lg bg-gray-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-700"
+        >
+          <span>🏠</span>
+          <span>Inicio</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Storage Debug -->
+    <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+        <span class="text-xl mr-2">🔍</span>
+        Debug del LocalStorage
+      </h3>
+      <p class="text-gray-600 dark:text-gray-400 mb-6">
+        Herramientas para inspeccionar y manipular el estado almacenado localmente.
+      </p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <button 
+          id="check-storage" 
+          class="flex items-center justify-center space-x-2 rounded-lg bg-yellow-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-yellow-700"
+        >
+          <span>🔍</span>
+          <span>Verificar Estado</span>
+        </button>
+        <button 
+          id="clear-storage" 
+          class="flex items-center justify-center space-x-2 rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-red-700"
+        >
+          <span>🗑️</span>
+          <span>Limpiar Storage</span>
+        </button>
+      </div>
+      
+      <div class="rounded-lg bg-gray-50 dark:bg-gray-700">
+        <div class="border-b border-gray-200 dark:border-gray-600 px-4 py-2">
+          <h4 class="text-sm font-medium text-gray-900 dark:text-white">Estado del LocalStorage:</h4>
+        </div>
+        <pre id="storage-output" class="p-4 text-xs text-gray-800 dark:text-gray-200 overflow-x-auto min-h-[100px] whitespace-pre-wrap"></pre>
+      </div>
+    </div>
+  </div>
+</MainLayout>
+
+<script>
+  const updateStorageOutput = () => {
+    const counterValue = localStorage.getItem('astro-counter-value');
+    const favorites = localStorage.getItem('favorites');
+    const theme = localStorage.getItem('theme-preference');
+    
+    const output = {
+      'astro-counter-value': counterValue,
+      'favorites': favorites ? JSON.parse(favorites) : null,
+      'theme-preference': theme,
+      'timestamp': new Date().toLocaleString()
+    };
+    
+    const outputElement = document.getElementById('storage-output');
+    if (outputElement) {
+      outputElement.textContent = JSON.stringify(output, null, 2);
+    }
+    
+    console.log('📦 Estado actual del localStorage:', output);
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('check-storage')?.addEventListener('click', updateStorageOutput);
+    
+    document.getElementById('clear-storage')?.addEventListener('click', () => {
+      if (confirm('¿Estás seguro de que quieres limpiar el counter storage?')) {
+        localStorage.removeItem('astro-counter-value');
+        console.log('🗑️ Counter storage eliminado');
+        updateStorageOutput();
+        
+        // Disparar evento para actualizar el counter
+        window.dispatchEvent(new CustomEvent('counterChanged', {
+          detail: { value: 0 }
+        }));
+      }
+    });
+    
+    // Escuchar cambios en el counter
+    window.addEventListener('counterChanged', (e) => {
+      console.log('🔄 Counter cambió:', (e as CustomEvent).detail.value);
+      setTimeout(updateStorageOutput, 100); // Pequeño delay para asegurar que localStorage se actualice
+    });
+    
+    // Escuchar cambios en favoritos
+    window.addEventListener('favoritesChanged', () => {
+      console.log('❤️ Favoritos cambiaron');
+      updateStorageOutput();
+    });
+    
+    // Escuchar cambios en tema
+    window.addEventListener('themeChanged', () => {
+      console.log('🎨 Tema cambió');
+      updateStorageOutput();
+    });
+    
+    // Mostrar estado inicial
+    updateStorageOutput();
+  });
+
+  // Actualizar también cuando se carga la página via Astro
+  document.addEventListener('astro:page-load', () => {
+    setTimeout(updateStorageOutput, 200);
+  });
+</script>

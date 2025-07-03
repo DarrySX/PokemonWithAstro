@@ -1,0 +1,131 @@
+---
+import MainLayout from '@layouts/MainLayout.astro';
+import Title from '@components/shared/Title.astro';
+---
+
+<MainLayout title="Test Favoritos">
+  <Title>Test de Funcionalidad de Favoritos</Title>
+  
+  <div class="space-y-4 max-w-2xl mx-auto">
+    <div class="bg-slate-700 p-4 rounded">
+      <h3 class="text-xl mb-4">Test Manual</h3>
+      <button id="test-add" class="bg-blue-500 px-4 py-2 rounded mr-2">
+        Agregar Blastoise a Favoritos
+      </button>
+      <button id="test-remove" class="bg-red-500 px-4 py-2 rounded mr-2">
+        Remover Blastoise de Favoritos
+      </button>
+      <button id="test-check" class="bg-green-500 px-4 py-2 rounded mr-2">
+        Verificar Estado
+      </button>
+      <button id="test-clear" class="bg-gray-500 px-4 py-2 rounded">
+        Limpiar Todo
+      </button>
+    </div>
+    
+    <div class="bg-slate-700 p-4 rounded">
+      <h3 class="text-xl mb-4">Estado Actual</h3>
+      <pre id="output" class="bg-slate-800 p-2 rounded text-sm"></pre>
+    </div>
+    
+    <div class="bg-slate-700 p-4 rounded">
+      <h3 class="text-xl mb-4">Enlaces de Prueba</h3>
+      <a href="/pokemons/blastoise" class="text-blue-400 hover:underline block">
+        → Ir a página de Blastoise
+      </a>
+      <a href="/favorites" class="text-blue-400 hover:underline block">
+        → Ver página de favoritos
+      </a>
+    </div>
+  </div>
+</MainLayout>
+
+<script>
+  interface FavoritePokemon {
+    id: number;
+    name: string;
+  }
+
+  const testPokemon: FavoritePokemon = {
+    id: 9,
+    name: 'blastoise'
+  };
+
+  const updateOutput = () => {
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    const output = document.getElementById('output');
+    if (output) {
+      output.textContent = JSON.stringify(favorites, null, 2);
+    }
+    console.log('📦 Estado actual de favoritos:', favorites);
+  };
+
+  const addToFavorites = () => {
+    let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    
+    // Verificar si ya existe
+    if (!favorites.some((fav: FavoritePokemon) => fav.name === testPokemon.name)) {
+      favorites.push(testPokemon);
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+      console.log('✅ Pokémon agregado:', testPokemon);
+      
+      // Disparar evento
+      window.dispatchEvent(new CustomEvent('favoritesChanged', { 
+        detail: favorites 
+      }));
+    } else {
+      console.log('⚠️ Pokémon ya está en favoritos');
+    }
+    updateOutput();
+  };
+
+  const removeFromFavorites = () => {
+    let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    favorites = favorites.filter((fav: FavoritePokemon) => fav.name !== testPokemon.name);
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    console.log('🗑️ Pokémon eliminado:', testPokemon.name);
+    
+    // Disparar evento
+    window.dispatchEvent(new CustomEvent('favoritesChanged', { 
+      detail: favorites 
+    }));
+    updateOutput();
+  };
+
+  const clearAll = () => {
+    localStorage.removeItem('favorites');
+    console.log('🗑️ Todos los favoritos eliminados');
+    
+    // Disparar evento
+    window.dispatchEvent(new CustomEvent('favoritesChanged', { 
+      detail: [] 
+    }));
+    updateOutput();
+  };
+
+  const checkState = () => {
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    const isBlastoiseFavorite = favorites.some((fav: FavoritePokemon) => fav.name === 'blastoise');
+    console.log('🔍 ¿Blastoise es favorito?', isBlastoiseFavorite);
+    console.log('📊 Total de favoritos:', favorites.length);
+    updateOutput();
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('test-add')?.addEventListener('click', addToFavorites);
+    document.getElementById('test-remove')?.addEventListener('click', removeFromFavorites);
+    document.getElementById('test-check')?.addEventListener('click', checkState);
+    document.getElementById('test-clear')?.addEventListener('click', clearAll);
+    
+    // Mostrar estado inicial
+    updateOutput();
+    
+    console.log('🚀 Página de test cargada correctamente');
+  });
+</script>
+
+<style>
+  .space-y-4 > * + * {
+    margin-top: 1rem;
+  }
+</style>

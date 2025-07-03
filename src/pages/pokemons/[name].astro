@@ -1,0 +1,394 @@
+---
+import type { GetStaticPaths } from 'astro';
+import type { PokemonListResponse } from '@interfaces/pokemon-list.response';
+
+import PokemonCard from '@components/pokemons/PokemonCard.astro';
+import MainLayout from '@layouts/MainLayout.astro';
+import Title from '@components/shared/Title.astro';
+
+export const getStaticPaths = (async () => {
+  const resp = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
+  const { results } = (await resp.json()) as PokemonListResponse;
+
+  return results.map(({ name, url }) => ({
+    params: { name: name },
+    props: { name: name, url: url },
+  }));
+}) satisfies GetStaticPaths;
+
+const { name } = Astro.params;
+const { url } = Astro.props;
+
+const id = url.split('/').at(-2);
+const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
+const imageSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
+---
+
+<MainLayout
+  title={`Pokémon Static | #${id} ${capitalizedName}`}
+  description={`Información completa sobre ${capitalizedName}, incluyendo características, sonidos y opciones para añadir a favoritos.`}
+  image={imageSrc}
+>
+  <div class="space-y-8">
+    <!-- Header with Navigation and Favorite -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="flex items-center space-x-4">
+        <button 
+          onclick="history.back()" 
+          class="inline-flex items-center space-x-2 rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+        >
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          <span>Regresar</span>
+        </button>
+        
+        <div class="hidden sm:flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+          <a href="/" class="hover:text-primary-600 dark:hover:text-primary-400">Inicio</a>
+          <span>/</span>
+          <a href="/pokemons/1" class="hover:text-primary-600 dark:hover:text-primary-400">Pokémon</a>
+          <span>/</span>
+          <span class="text-gray-900 dark:text-white">{capitalizedName}</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <span class="rounded-full bg-primary-100 px-3 py-1 text-sm font-medium text-primary-800 dark:bg-primary-900/30 dark:text-primary-300">
+          #{id}
+        </span>
+        
+        <button 
+          id="btn-favorite" 
+          class="group relative inline-flex h-12 w-12 items-center justify-center rounded-lg border border-gray-200 bg-white transition-all hover:scale-105 hover:border-red-300 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-red-600 dark:hover:bg-red-900/20 dark:focus:ring-offset-gray-900" 
+          data-name={name} 
+          data-id={id}
+          title={`Agregar ${capitalizedName} a favoritos`}
+          aria-label={`Agregar ${capitalizedName} a favoritos`}
+        >
+          <!-- Corazón vacío -->
+          <svg 
+            data-outline 
+            width="22" 
+            height="22" 
+            viewBox="0 0 256 256"
+            class="text-gray-400 transition-all duration-200 group-hover:text-red-500 dark:text-gray-500"
+            fill="currentColor"
+          >
+            <path d="M178 42c-21 0-39.26 9.47-50 25.34C117.26 51.47 99 42 78 42a60.07 60.07 0 0 0-60 60c0 29.2 18.2 59.59 54.1 90.31a334.7 334.7 0 0 0 53.06 37a6 6 0 0 0 5.68 0a334.7 334.7 0 0 0 53.06-37C219.8 161.59 238 131.2 238 102a60.07 60.07 0 0 0-60-60m-50 175.11c-16.41-9.47-98-59.39-98-115.11a48.05 48.05 0 0 1 48-48c20.28 0 37.31 10.83 44.45 28.27a6 6 0 0 0 11.1 0C140.69 64.83 157.72 54 178 54a48.05 48.05 0 0 1 48 48c0 55.72-81.59 105.64-98 115.11"/>
+          </svg>
+          
+          <!-- Corazón lleno -->
+          <svg 
+            data-full 
+            width="22" 
+            height="22" 
+            viewBox="0 0 256 256"
+            class="absolute inset-0 m-auto hidden text-red-500 transition-all duration-200"
+            fill="currentColor"
+          >
+            <path d="M240 102c0 70-103.79 126.66-108.21 129a8 8 0 0 1-7.58 0C119.79 228.66 16 172 16 102a62.07 62.07 0 0 1 62-62c20.65 0 38.73 8.88 50 23.89C139.27 48.88 157.35 40 178 40a62.07 62.07 0 0 1 62 62"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Pokemon Header -->
+    <div class="text-center">
+      <Title size="xl">{capitalizedName}</Title>
+      <p class="text-gray-600 dark:text-gray-300">
+        Pokémon #{id} - Explora todas sus características
+      </p>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Pokemon Visual -->
+      <div class="flex justify-center lg:justify-end">
+        <div class="animate-fade-in">
+          <PokemonCard name={name} url={url} isBig />
+        </div>
+      </div>
+
+      <!-- Pokemon Details -->
+      <div class="space-y-6">
+        <!-- Basic Info -->
+        <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+            <span class="text-xl mr-2">📊</span>
+            Información Básica
+          </h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">ID Nacional</p>
+              <p class="text-lg font-semibold text-gray-900 dark:text-white">#{id}</p>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Nombre</p>
+              <p class="text-lg font-semibold text-gray-900 dark:text-white">{capitalizedName}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audio Section -->
+        <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+            <span class="text-xl mr-2">🔊</span>
+            Grito Característico
+          </h3>
+          <div class="space-y-3">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              Escucha el sonido único de {capitalizedName}
+            </p>
+            <audio 
+              controls 
+              class="w-full h-10 rounded-lg"
+              preload="metadata"
+            >
+              <source src={audioSrc} type="audio/ogg" />
+              Tu navegador no soporta el elemento de audio.
+            </audio>
+          </div>
+        </div>
+
+        <!-- Favorite Actions -->
+        <div class="rounded-lg bg-gradient-to-br from-red-50 to-pink-100 p-6 dark:from-red-900/20 dark:to-pink-900/20">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+            <span class="text-xl mr-2">❤️</span>
+            Agregar a Favoritos
+          </h3>
+          <p class="text-gray-700 dark:text-gray-300 mb-4">
+            ¿Te gusta {capitalizedName}? Agrégalo a tu colección personal de Pokémon favoritos para acceder fácilmente a él.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <button 
+              id="btn-favorite-secondary"
+              class="inline-flex items-center justify-center space-x-2 rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+              data-name={name} 
+              data-id={id}
+            >
+              <span>❤️</span>
+              <span id="favorite-text">Agregar a Favoritos</span>
+            </button>
+            <a 
+              href="/favorites" 
+              class="inline-flex items-center justify-center space-x-2 rounded-lg bg-gray-100 px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            >
+              <span>📋</span>
+              <span>Ver Mis Favoritos</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Section -->
+    <div class="border-t border-gray-200 pt-6 dark:border-gray-700">
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">
+          <p>Explora más Pokémon o regresa a la lista principal</p>
+        </div>
+        <div class="flex items-center space-x-3">
+          <a 
+            href="/pokemons/1" 
+            class="inline-flex items-center space-x-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+          >
+            <span>🔍</span>
+            <span>Explorar Más</span>
+          </a>
+          <a 
+            href="/" 
+            class="inline-flex items-center space-x-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+          >
+            <span>🏠</span>
+            <span>Inicio</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</MainLayout>
+
+<script>
+  // Interfaces y tipos necesarios
+  interface FavoritePokemon {
+    id: number;
+    name: string;
+  }
+
+  // Utilidades para manejar favoritos
+  const FavoritesManager = {
+    getFavorites(): FavoritePokemon[] {
+      try {
+        const data = localStorage.getItem('favorites');
+        return data ? JSON.parse(data) : [];
+      } catch (error) {
+        console.error('Error loading favorites:', error);
+        return [];
+      }
+    },
+
+    saveFavorites(favorites: FavoritePokemon[]): void {
+      try {
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+        
+        // Disparar evento personalizado para notificar cambios
+        window.dispatchEvent(new CustomEvent('favoritesChanged', { 
+          detail: favorites 
+        }));
+        
+        // También disparar evento storage para compatibilidad con otras páginas
+        window.dispatchEvent(new StorageEvent('storage', {
+          bubbles: false,
+          cancelable: false,
+          key: 'favorites',
+          newValue: JSON.stringify(favorites),
+          oldValue: null,
+          storageArea: localStorage,
+          url: window.location.href
+        }));
+      } catch (error) {
+        console.error('Error saving favorites:', error);
+      }
+    },
+
+    isFavorite(pokemonName: string): boolean {
+      const favorites = this.getFavorites();
+      return favorites.some(fav => fav.name === pokemonName);
+    },
+
+    toggleFavorite(pokemon: FavoritePokemon): boolean {
+      const favorites = this.getFavorites();
+      const existingIndex = favorites.findIndex(fav => fav.name === pokemon.name);
+      
+      if (existingIndex >= 0) {
+        // Eliminar
+        favorites.splice(existingIndex, 1);
+        this.saveFavorites(favorites);
+        return false;
+      } else {
+        // Agregar
+        favorites.push(pokemon);
+        this.saveFavorites(favorites);
+        return true;
+      }
+    }
+  };
+
+  // Función principal de inicialización
+  const initializeFavorites = () => {
+    // Buscar elementos del DOM
+    const btnFavorite = document.getElementById('btn-favorite');
+    const btnFavoriteSecondary = document.getElementById('btn-favorite-secondary');
+    const favoriteText = document.getElementById('favorite-text');
+
+    if (!btnFavorite && !btnFavoriteSecondary) {
+      console.error('No se encontraron botones de favoritos');
+      return;
+    }
+
+    // Obtener datos del pokemon desde los data attributes
+    const pokemonData = btnFavorite || btnFavoriteSecondary;
+    const name = pokemonData?.getAttribute('data-name') || '';
+    const id = pokemonData?.getAttribute('data-id') || '';
+    
+    if (!name || !id) {
+      console.error('Datos del pokemon no válidos');
+      return;
+    }
+
+    // Buscar iconos de corazón
+    const heartOutline = btnFavorite?.querySelector('[data-outline]');
+    const heartFull = btnFavorite?.querySelector('[data-full]');
+
+    // Función para actualizar la UI
+    const updateUI = (isFavorite: boolean) => {
+      // Actualizar iconos del corazón
+      if (heartOutline && heartFull) {
+        if (isFavorite) {
+          heartOutline.classList.add('hidden');
+          heartFull.classList.remove('hidden');
+        } else {
+          heartOutline.classList.remove('hidden');
+          heartFull.classList.add('hidden');
+        }
+      }
+
+      // Actualizar texto del botón secundario
+      if (favoriteText) {
+        favoriteText.textContent = isFavorite ? 'Eliminar de Favoritos' : 'Agregar a Favoritos';
+      }
+
+      // Actualizar estilos del botón secundario
+      if (btnFavoriteSecondary) {
+        // Remover todas las clases de color
+        btnFavoriteSecondary.classList.remove(
+          'bg-red-600', 'hover:bg-red-700', 
+          'bg-gray-600', 'hover:bg-gray-700'
+        );
+        
+        // Aplicar clases según el estado
+        if (isFavorite) {
+          btnFavoriteSecondary.classList.add('bg-gray-600', 'hover:bg-gray-700');
+        } else {
+          btnFavoriteSecondary.classList.add('bg-red-600', 'hover:bg-red-700');
+        }
+      }
+
+      // Actualizar título del botón principal
+      if (btnFavorite) {
+        const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
+        btnFavorite.title = isFavorite 
+          ? `Eliminar ${capitalizedName} de favoritos`
+          : `Agregar ${capitalizedName} a favoritos`;
+      }
+    };
+
+    // Función para manejar el toggle
+    const handleToggle = (event: Event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      const pokemon: FavoritePokemon = {
+        id: parseInt(id),
+        name: name
+      };
+
+      const newState = FavoritesManager.toggleFavorite(pokemon);
+      updateUI(newState);
+    };
+
+    // Configurar estado inicial
+    const initialState = FavoritesManager.isFavorite(name);
+    updateUI(initialState);
+
+    // Añadir event listeners
+    if (btnFavorite) {
+      btnFavorite.addEventListener('click', handleToggle);
+    }
+
+    if (btnFavoriteSecondary) {
+      btnFavoriteSecondary.addEventListener('click', handleToggle);
+    }
+  };
+
+  // Función para ejecutar la inicialización de forma segura
+  const safeInit = () => {
+    try {
+      initializeFavorites();
+    } catch (error) {
+      console.error('Error inicializando favoritos:', error);
+    }
+  };
+
+  // Inicializar cuando el DOM esté listo
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', safeInit);
+  } else {
+    // Si el DOM ya está listo, ejecutar inmediatamente
+    safeInit();
+  }
+
+  // También manejar navegación de Astro
+  document.addEventListener('astro:page-load', safeInit);
+</script>
